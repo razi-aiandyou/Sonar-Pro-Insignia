@@ -38,7 +38,8 @@ def chat_sonar_memory(user_input, thread_id):
                 "1. Offer actionable insights and recommendations that help the user make informed decisions."
                 "2. Prepare detailed reports summarizing your findings, insights, and recommendations."
                 "3. Ensure all reports are well-structured, easy to understand, and professionally presented."
-                "4. Provide citations in list at the very end of your output"
+                "4. Cite your sources every time you craft a response based on external information, e.g., [1][2]."
+                "5. Provide citations in a list format at the end of your output. Each citation should be on its own line."
             ),
         }
     ]

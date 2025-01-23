@@ -1,72 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import MessageInput from './MessageInput';
-
-const formatContent = (content, citations) => {
-  const lines = content.split('\n');
-  return lines.map((line, lineIndex) => {
-    // Handle headers
-    if (line.startsWith('# ')) {
-      return <h1 key={lineIndex}>{line.slice(2)}</h1>;
-    }
-    if (line.startsWith('## ')) {
-      return <h2 key={lineIndex}>{line.slice(3)}</h2>;
-    }
-    if (line.startsWith('### ')) {
-      return <h3 key={lineIndex}>{line.slice(4)}</h3>;
-    }
-
-    // Handle bullet points
-    if (line.startsWith('- ')) {
-      return <li key={lineIndex}>{formatInline(line.slice(2), citations)}</li>;
-    }
-
-    // Handle numbered lists
-    const numberedListMatch = line.match(/^\d+\.\s(.*)/);
-    if (numberedListMatch) {
-      return <li key={lineIndex}>{formatInline(numberedListMatch[1], citations)}</li>;
-    }
-
-    // Regular paragraph
-    return <p key={lineIndex}>{formatInline(line, citations)}</p>;
-  });
-};
-
-const formatInline = (text, citations) => {
-  // Handle bold text and citations
-  const parts = text.split(/(\*\*.*?\*\*|\[\d+\])/g);
-
-  return parts.map((part, index) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      // Bold text
-      return <strong key={index}>{part.slice(2, -2)}</strong>;
-    } else if (part.match(/\[\d+\]/)) {
-      // Citation
-      const citationNumber = parseInt(part.slice(1, -1));
-      const citationLink = citations && citations[citationNumber - 1];
-      return (
-        <a
-          key={index}
-          href={citationLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="citation-link"
-          onClick={(e) => {
-            e.preventDefault();
-            document.querySelector(`#citation-${citationNumber}`).scrollIntoView({
-              behavior: 'smooth'
-            });
-          }}
-        >
-          {part}
-        </a>
-      );
-    } else {
-      // Regular text
-      return part;
-    }
-  });
-};
-
 
 function ChatWindow({ currentThread, addMessageToThread }) {
   const [isStreaming, setIsStreaming] = useState(false);
@@ -157,7 +92,31 @@ function ChatWindow({ currentThread, addMessageToThread }) {
           </div>
         ) : (
           <div className="ai-response">
-            {formatContent(msg.content, msg.citations)}
+            <ReactMarkdown 
+              remarkPlugins={[remarkGfm]}
+              components={{
+                a: ({node, ...props}) => {
+                  const match = props.href.match(/^citation-(\d+)$/);
+                  if (match) {
+                    const citationNumber = parseInt(match[1]);
+                    return (
+                      <a
+                        {...props}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          document.querySelector(`#citation-${citationNumber}`).scrollIntoView({
+                            behavior: 'smooth'
+                          });
+                        }}
+                      />
+                    );
+                  }
+                  return <a {...props} target="_blank" rel="noopener noreferrer" />;
+                }
+              }}
+            >
+              {msg.content}
+            </ReactMarkdown>
             {msg.citations && msg.citations.length > 0 && (
               <div className="citations">
                 <h4>Citations:</h4>
@@ -173,8 +132,6 @@ function ChatWindow({ currentThread, addMessageToThread }) {
       </div>
     );
   };
-  
-  
 
   return (
     <div className="chat-window">
@@ -187,7 +144,9 @@ function ChatWindow({ currentThread, addMessageToThread }) {
             {isStreaming && (
               <div className="message assistant-message">
                 <div className="ai-response">
-                  {formatContent(streamedContent, citations)}
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {streamedContent}
+                  </ReactMarkdown>
                 </div>
               </div>
             )}
