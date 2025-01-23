@@ -66,22 +66,28 @@ body {
   flex: 1;
   overflow-y: auto;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .message {
   margin-bottom: 20px;
-  padding: 15px;
-  border-radius: 10px;
   max-width: 80%;
 }
 
 .user-message {
-  background-color: #16213e;
   align-self: flex-end;
 }
 
+.user-bubble {
+  background-color: #16213e;
+  color: #ffffff;
+  padding: 10px 15px;
+  border-radius: 18px;
+  display: inline-block;
+}
+
 .assistant-message {
-  background-color: #0f3460;
   align-self: flex-start;
 }
 
@@ -164,7 +170,9 @@ body {
   color: #888;
 }
 
-/* Add these styles to your existing App.css */
+.ai-response {
+  color: #ffffff;
+}
 
 .ai-response h2 {
   font-size: 1.5em;

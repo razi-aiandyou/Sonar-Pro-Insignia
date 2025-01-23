@@ -1,6 +1,8 @@
+from flask import Response
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
+import json
 
 load_dotenv()
 PERPLEXITY_API_KEY = os.getenv('PERPLEXITY_API_KEY')
@@ -43,17 +45,29 @@ def chat_sonar_memory(user_input, thread_id):
 
     client = OpenAI(api_key=PERPLEXITY_API_KEY, base_url="https://api.perplexity.ai")
 
-    # Chat completion
-    response = client.chat.completions.create(
+    # Chat completion with streaming
+    response_stream = client.chat.completions.create(
         model="sonar-pro",
-        messages=messages
+        messages=messages,
+        stream=True
     )
 
-    output = response.choices[0].message.content
-    citations = response.citations
+    def generate():
+        full_response = ""
+        for chunk in response_stream:
+            if chunk.choices[0].delta.content is not None:
+                content = chunk.choices[0].delta.content
+                full_response += content
+                yield f"data: {json.dumps({'content': content})}\n\n"
 
-    # Add assistant message to conversation history
-    conversation_history.append({"role": "assistant", "content": "output"})
+        # Send Citations at the end if exists
+        if hasattr(response_stream, 'citations'):
+            yield f"data: {json.dumps({'citations': response_stream.citations})}\n\n"
+        
+        # Add the full response to conversation history
+        conversation_history.append({"role": "assistant", "content": full_response})
+        
+        # Send the [DONE] message
+        yield "data: [DONE]\n\n"
 
-    return output, citations
-
+    return Response(generate(), content_type="text/event-stream")

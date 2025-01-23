@@ -19,12 +19,15 @@ function App() {
   };
 
   const addMessageToThread = (threadId, message) => {
-    setThreads(threads.map(thread => 
-      thread.id === threadId 
-        ? { ...thread, messages: [...thread.messages, message] } 
-        : thread
-    ));
+    setThreads(prevThreads => 
+      prevThreads.map(thread => 
+        thread.id === threadId
+          ? { ...thread, messages: [...thread.messages, message] }
+          : thread
+      )
+    );
   };
+  
 
   const currentThread = threads.find(thread => thread.id === currentThreadId);
 
