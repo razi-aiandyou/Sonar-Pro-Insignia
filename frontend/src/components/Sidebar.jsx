@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 
-function Sidebar({ threads, currentThreadId, setCurrentThreadId, createNewThread, renameThread }) {
+function Sidebar({ threads, currentThreadId, setCurrentThreadId, createNewThread, renameThread, deleteThread }) {
   const [editingThreadId, setEditingThreadId] = useState(null);
   const [newThreadName, setNewThreadName] = useState('');
+  const [menuOpenThreadId, setMenuOpenThreadId] = useState(null);
 
   const handleRename = (threadId) => {
     if (newThreadName.trim()) {
@@ -10,6 +11,17 @@ function Sidebar({ threads, currentThreadId, setCurrentThreadId, createNewThread
       setEditingThreadId(null);
       setNewThreadName('');
     }
+  };
+
+  const handleMenuToggle = (e, threadId) => {
+    e.stopPropagation();
+    setMenuOpenThreadId(menuOpenThreadId === threadId ? null : threadId);
+  };
+
+  const handleDelete = (e, threadId) => {
+    e.stopPropagation();
+    deleteThread(threadId);
+    setMenuOpenThreadId(null);
   };
 
   return (
@@ -35,15 +47,22 @@ function Sidebar({ threads, currentThreadId, setCurrentThreadId, createNewThread
             >
               {thread.name}
               <span 
-                className="rename-icon" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEditingThreadId(thread.id);
-                  setNewThreadName(thread.name);
-                }}
+                className="menu-icon" 
+                onClick={(e) => handleMenuToggle(e, thread.id)}
               >
-                ✏️
+                ⋮
               </span>
+              {menuOpenThreadId === thread.id && (
+                <div className="thread-menu">
+                  <button onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingThreadId(thread.id);
+                    setNewThreadName(thread.name);
+                    setMenuOpenThreadId(null);
+                  }}>Rename</button>
+                  <button onClick={(e) => handleDelete(e, thread.id)}>Delete</button>
+                </div>
+              )}
             </button>
           )}
         </div>

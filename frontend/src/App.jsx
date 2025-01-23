@@ -27,14 +27,20 @@ function App() {
       )
     );
   };
-  
+
+  const deleteThread = (threadId) => {
+    setThreads(prevThreads => prevThreads.filter(thread => thread.id !== threadId));
+    if (currentThreadId === threadId) {
+      setCurrentThreadId(null);
+    }
+  };  
 
   const currentThread = threads.find(thread => thread.id === currentThreadId);
 
   return (
     <div className="app">
       <header className="app-header">
-        <h1 className="app-title">Insignia Investment Analyst</h1>
+        <h1 className="app-title">Insignia AI Companion</h1>
       </header>
       <div className="main-content">
         <Sidebar 
@@ -43,6 +49,7 @@ function App() {
           setCurrentThreadId={setCurrentThreadId}
           createNewThread={createNewThread}
           renameThread={renameThread}
+          deleteThread={deleteThread}
         />
         <ChatWindow 
           currentThread={currentThread}

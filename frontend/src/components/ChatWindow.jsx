@@ -32,38 +32,41 @@ const formatContent = (content, citations) => {
 };
 
 const formatInline = (text, citations) => {
-  // Handle bold text
-  const boldRegex = /\*\*(.*?)\*\*/g;
-  const parts = text.split(boldRegex);
+  // Handle bold text and citations
+  const parts = text.split(/(\*\*.*?\*\*|\[\d+\])/g);
 
   return parts.map((part, index) => {
-    if (index % 2 === 1) {
-      // This part was inside ** **, so it should be bold
-      return <strong key={index}>{part}</strong>;
+    if (part.startsWith('**') && part.endsWith('**')) {
+      // Bold text
+      return <strong key={index}>{part.slice(2, -2)}</strong>;
+    } else if (part.match(/\[\d+\]/)) {
+      // Citation
+      const citationNumber = parseInt(part.slice(1, -1));
+      const citationLink = citations && citations[citationNumber - 1];
+      return (
+        <a
+          key={index}
+          href={citationLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="citation-link"
+          onClick={(e) => {
+            e.preventDefault();
+            document.querySelector(`#citation-${citationNumber}`).scrollIntoView({
+              behavior: 'smooth'
+            });
+          }}
+        >
+          {part}
+        </a>
+      );
+    } else {
+      // Regular text
+      return part;
     }
-
-    // Handle citations
-    const citationParts = part.split(/(\[\d+\])/g);
-    return citationParts.map((citationPart, citationIndex) => {
-      const match = citationPart.match(/\[(\d+)\]/);
-      if (match && citations) {
-        const citationIndex = parseInt(match[1]) - 1;
-        return (
-          <a
-            key={citationIndex}
-            href={citations[citationIndex]}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="citation-link"
-          >
-            {citationPart}
-          </a>
-        );
-      }
-      return citationPart;
-    });
   });
 };
+
 
 function ChatWindow({ currentThread, addMessageToThread }) {
   const [isStreaming, setIsStreaming] = useState(false);
@@ -146,9 +149,6 @@ function ChatWindow({ currentThread, addMessageToThread }) {
   };
 
   const renderMessage = (msg) => {
-    const content = msg.content.split('\n');
-    let inList = false;
-    
     return (
       <div className={`message ${msg.role}-message`}>
         {msg.role === 'user' ? (
@@ -157,28 +157,13 @@ function ChatWindow({ currentThread, addMessageToThread }) {
           </div>
         ) : (
           <div className="ai-response">
-            {content.map((line, index) => {
-              if (line.startsWith('- ') || line.match(/^\d+\.\s/)) {
-                if (!inList) {
-                  inList = true;
-                  return <ul key={index}>{formatContent(line, msg.citations)}</ul>;
-                }
-                return formatContent(line, msg.citations);
-              } else if (inList) {
-                inList = false;
-                return <>{formatContent(line, msg.citations)}</>;
-              } else {
-                return formatContent(line, msg.citations);
-              }
-            })}
+            {formatContent(msg.content, msg.citations)}
             {msg.citations && msg.citations.length > 0 && (
               <div className="citations">
                 <h4>Citations:</h4>
                 {msg.citations.map((citation, index) => (
-                  <p key={index}>
-                    <a href={citation} target="_blank" rel="noopener noreferrer">
-                      [{index + 1}] {citation}
-                    </a>
+                  <p key={index} id={`citation-${index + 1}`}>
+                    [{index + 1}] <a href={citation} target="_blank" rel="noopener noreferrer">{citation}</a>
                   </p>
                 ))}
               </div>
@@ -188,6 +173,8 @@ function ChatWindow({ currentThread, addMessageToThread }) {
       </div>
     );
   };
+  
+  
 
   return (
     <div className="chat-window">
