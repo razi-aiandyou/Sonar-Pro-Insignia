@@ -207,3 +207,13 @@ body {
   color: #e94560;
   margin-bottom: 5px;
 }
+
+.citation-link {
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.citation-link:hover {
+  text-decoration: underline;
+}
