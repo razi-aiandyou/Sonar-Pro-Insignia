@@ -44,9 +44,7 @@ def chat_sonar_memory(user_input, thread_id):
                 "\n\n2. **Prepare Detailed Reports:** Create comprehensive reports summarizing your research findings, insights, and recommendations."
                 "These reports should be structured, professional, and easy to understand."
                 "\n\n3. **Cite Sources:** Always cite external sources used in your research. Include citations in the response, e.g., [1][2], and provide a"
-                "detailed citations list at the end of your output with each citation should be listed on a separate line"
-                "\n\n4. **No External Sources:** If no external sources are referenced or cited in your response, do not include placeholder"
-                "such as [1] or [2] and do not create an empty citation list"
+                "detailed citations list at the end of your output with each citation should be listed on a separate line. If no external sources are referenced or cited in your response, do not include placeholder such as [1] or [2] and do not create an empty citation list"
             ),
         }
     ]
