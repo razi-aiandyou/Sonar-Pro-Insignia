@@ -40,7 +40,8 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1 className="app-title">Insignia AI Companion</h1>
+        <h1 className="app-title">A.I.R.S Pulse</h1>
+        <p className='paragraph-on-title'>Tailored for Complex Research. Copyright to <span className='aiandyou-title'>AI&You</span></p>
       </header>
       <div className="main-content">
         <Sidebar 

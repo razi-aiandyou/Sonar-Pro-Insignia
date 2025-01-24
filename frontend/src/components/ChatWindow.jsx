@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import MessageInput from './MessageInput';
+import {saveAs} from 'file-saver';
 
 function ChatWindow({ currentThread, addMessageToThread }) {
   const [isStreaming, setIsStreaming] = useState(false);
@@ -14,6 +15,20 @@ function ChatWindow({ currentThread, addMessageToThread }) {
   };
 
   useEffect(scrollToBottom, [currentThread?.messages, streamedContent]);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(streamedContent);
+    alert('Response copied to clipboard!');
+  };
+
+  const handleDownload = async (content, format) => {
+    switch (format) {
+      case 'txt':
+        const txtBlob = new Blob([content], { type: 'text/plain' });
+        saveAs(txtBlob, 'response.txt');
+        break;
+    }
+  };
 
   const handleSendMessage = async (message) => {
     if (!currentThread) return;
@@ -91,47 +106,57 @@ function ChatWindow({ currentThread, addMessageToThread }) {
             <p>{msg.content}</p>
           </div>
         ) : (
-          <div className="ai-response">
-            <ReactMarkdown 
-              remarkPlugins={[remarkGfm]}
-              components={{
-                a: ({node, ...props}) => {
-                  const match = props.href.match(/^citation-(\d+)$/);
-                  if (match) {
-                    const citationNumber = parseInt(match[1]);
-                    return (
-                      <a
-                        {...props}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          document.querySelector(`#citation-${citationNumber}`).scrollIntoView({
-                            behavior: 'smooth'
-                          });
-                        }}
-                      />
-                    );
+          <>
+            <div className="ai-response">
+              <ReactMarkdown 
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  a: ({node, ...props}) => {
+                    const match = props.href.match(/^citation-(\d+)$/);
+                    if (match) {
+                      const citationNumber = parseInt(match[1]);
+                      return (
+                        <a
+                          {...props}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            document.querySelector(`#citation-${citationNumber}`).scrollIntoView({
+                              behavior: 'smooth'
+                            });
+                          }}
+                        />
+                      );
+                    }
+                    return <a {...props} target="_blank" rel="noopener noreferrer" />;
                   }
-                  return <a {...props} target="_blank" rel="noopener noreferrer" />;
-                }
-              }}
-            >
-              {msg.content}
-            </ReactMarkdown>
-            {msg.citations && msg.citations.length > 0 && (
-              <div className="citations">
-                <h4>Citations:</h4>
-                {msg.citations.map((citation, index) => (
-                  <p key={index} id={`citation-${index + 1}`}>
-                    [{index + 1}] <a href={citation} target="_blank" rel="noopener noreferrer">{citation}</a>
-                  </p>
-                ))}
-              </div>
-            )}
-          </div>
+                }}
+              >
+                {msg.content}
+              </ReactMarkdown>
+              {msg.citations && msg.citations.length > 0 && (
+                <div className="citations">
+                  <h4>Citations:</h4>
+                  {msg.citations.map((citation, index) => (
+                    <p key={index} id={`citation-${index + 1}`}>
+                      [{index + 1}] <a href={citation} target="_blank" rel="noopener noreferrer">{citation}</a>
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="message-actions">
+              <button className="action-btn" onClick={() => handleCopy(msg.content)}>
+                📋 Copy
+              </button>
+              <button className="action-btn" onClick={() => handleDownload(msg.content, 'txt')}>
+                ⬇️ Download
+              </button>
+            </div>
+          </>
         )}
       </div>
     );
-  };
+  };  
 
   return (
     <div className="chat-window">
@@ -160,7 +185,7 @@ function ChatWindow({ currentThread, addMessageToThread }) {
         </div>
       )}
     </div>
-  );
+  );  
 }
 
 export default ChatWindow;
