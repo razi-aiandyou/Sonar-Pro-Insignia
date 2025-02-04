@@ -30,6 +30,28 @@ function ChatWindow({ currentThread, addMessageToThread }) {
     }
   };
 
+  const parseCitations = (content) => {
+    // Split content to remove the "Citations:" section from main content
+    const [mainContent] = content.split('Citations:');
+    
+    // Extract unique citations
+    const citationRegex = /\[(\d+)\]\s*(https?:\/\/\S+)/g;
+    const citations = new Map(); // Use Map to ensure uniqueness
+    
+    let match;
+    while ((match = citationRegex.exec(content)) !== null) {
+      const [_, number, url] = match;
+      if (!citations.has(number)) {
+        citations.set(number, url);
+      }
+    }
+    
+    return {
+      cleanContent: mainContent,
+      citations: Array.from(citations).map(([number, url]) => ({ number, url }))
+    };
+  };  
+
   const handleSendMessage = async (message) => {
     if (!currentThread) return;
 
@@ -99,6 +121,8 @@ function ChatWindow({ currentThread, addMessageToThread }) {
   };
 
   const renderMessage = (msg) => {
+    const { cleanContent, citations } = parseCitations(msg.content);
+    
     return (
       <div className={`message ${msg.role}-message`}>
         {msg.role === 'user' ? (
@@ -112,16 +136,18 @@ function ChatWindow({ currentThread, addMessageToThread }) {
                 remarkPlugins={[remarkGfm]}
                 components={{
                   a: ({node, ...props}) => {
-                    const match = props.href.match(/^citation-(\d+)$/);
-                    if (match) {
-                      const citationNumber = parseInt(match[1]);
+                    // Handle citation links
+                    if (props.href.startsWith('citation://')) {
+                      const citationNumber = props.href.split('://')[1];
                       return (
                         <a
                           {...props}
+                          className="citation-link"
                           onClick={(e) => {
                             e.preventDefault();
-                            document.querySelector(`#citation-${citationNumber}`).scrollIntoView({
-                              behavior: 'smooth'
+                            document.querySelector(`#citation-${citationNumber}`)?.scrollIntoView({
+                              behavior: 'smooth',
+                              block: 'nearest'
                             });
                           }}
                         />
@@ -131,16 +157,26 @@ function ChatWindow({ currentThread, addMessageToThread }) {
                   }
                 }}
               >
-                {msg.content}
+                {msg.content.replace(/\[(\d+)\]/g, (match, p1) => `[${p1}](citation://${p1})`)}
               </ReactMarkdown>
-              {msg.citations && msg.citations.length > 0 && (
-                <div className="citations">
-                  <h4>Citations:</h4>
-                  {msg.citations.map((citation, index) => (
-                    <p key={index} id={`citation-${index + 1}`}>
-                      [{index + 1}] <a href={citation} target="_blank" rel="noopener noreferrer">{citation}</a>
-                    </p>
-                  ))}
+              
+              {citations.length > 0 && (
+                <div className="citation-ticker">
+                  <div className="ticker-header">References</div>
+                  <div className="ticker-container">
+                    {Array.from(new Set(citations)).map((cite, index) => (
+                      <div 
+                        key={index} 
+                        id={`citation-${cite.number}`}
+                        className="ticker-item"
+                      >
+                        <span className="citation-number">[{cite.number}]</span>
+                        <a href={cite.url} target="_blank" rel="noopener noreferrer">
+                          {cite.url}
+                        </a>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -156,7 +192,7 @@ function ChatWindow({ currentThread, addMessageToThread }) {
         )}
       </div>
     );
-  };  
+  }; 
 
   return (
     <div className="chat-window">

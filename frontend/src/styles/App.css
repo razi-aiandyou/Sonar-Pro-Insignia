@@ -233,7 +233,7 @@ body {
 }
 
 .ai-response {
-  color: var(--text-primary);
+  color: var(--text-primary) !important;
   line-height: 1.7;
   padding: 16px;
   border-radius: 8px;
@@ -243,13 +243,13 @@ body {
 .ai-response h2 {
   font-size: 1.25rem;
   margin: 1.5rem 0 1rem;
-  color: var(--accent-primary);
+  color: var(--accent-primary) !important;
 }
 
 .ai-response h3 {
   font-size: 1.125rem;
   margin: 1rem 0 0.5rem;
-  color: var(--accent-primary);
+  color: var(--accent-primary) !important;
 }
 
 .ai-response p {
@@ -340,18 +340,93 @@ body {
 }
 
 .citations h4 {
-  color: var(--accent-primary);
+  color: var(--accent-primary) !important;
   margin-bottom: 0.5rem;
 }
 
 .citation-link {
-  color: var(--accent-primary);
+  color: var(--accent-primary) !important;
   text-decoration: none;
   cursor: pointer;
 }
 
 .citation-link:hover {
   text-decoration: underline;
+}
+
+.citation-ticker {
+  margin-top: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.citation-ticker a,
+.citation-ticker a:visited {
+  color: var(--text-secondary) !important;
+  text-decoration: none;
+}
+
+.citation-ticker a:hover {
+  color: var(--accent-hover) !important;
+  text-decoration: underline;
+}
+
+.ticker-header {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: var(--accent-primary);
+}
+
+.ticker-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.ticker-item {
+  flex: 0 0 auto;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(5px);
+}
+
+.citation-number {
+  background: var(--text-secondary);
+  color: var(--bg-tertiary);
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.citation-link {
+  color: var(--accent-primary) !important;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.citation-link:hover {
+  text-decoration: underline;
+}
+
+/* Scrollbar styling */
+.ticker-container::-webkit-scrollbar {
+  height: 4px;
+}
+
+.ticker-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.ticker-container::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 2px;
 }
 
 .menu-icon {
