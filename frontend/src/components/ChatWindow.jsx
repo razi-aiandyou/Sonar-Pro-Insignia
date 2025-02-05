@@ -157,7 +157,7 @@ function ChatWindow({ currentThread, addMessageToThread }) {
                   }
                 }}
               >
-                {msg.content.replace(/\[(\d+)\]/g, (match, p1) => `[${p1}](citation://${p1})`)}
+                {cleanContent.replace(/\[(\d+)\]/g, (match, p1) => `[${p1}](citation://${p1})`)}
               </ReactMarkdown>
               
               {citations.length > 0 && (

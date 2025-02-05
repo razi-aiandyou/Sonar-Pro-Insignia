@@ -363,7 +363,7 @@ body {
 
 .citation-ticker a,
 .citation-ticker a:visited {
-  color: var(--accent-primary) !important;
+  color: var(--text-secondary) !important;
   text-decoration: none;
 }
 
@@ -398,7 +398,7 @@ body {
 
 .citation-number {
   background: var(--text-secondary);
-  color: var(--bg-tertiary);
+  color: var(--accent-primary);
   padding: 0.2rem 0.5rem;
   border-radius: 10px;
   font-weight: bold;
