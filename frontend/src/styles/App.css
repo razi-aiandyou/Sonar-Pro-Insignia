@@ -363,7 +363,7 @@ body {
 
 .citation-ticker a,
 .citation-ticker a:visited {
-  color: var(--text-secondary) !important;
+  color: var(--accent-primary) !important;
   text-decoration: none;
 }
 
@@ -375,7 +375,7 @@ body {
 .ticker-header {
   font-weight: bold;
   margin-bottom: 0.5rem;
-  color: var(--accent-primary);
+  color: var(--text-secondary);
 }
 
 .ticker-container {
@@ -432,6 +432,21 @@ body {
 .menu-icon {
   cursor: pointer;
   padding: 0 0.25rem;
+}
+
+.citation-marker {
+  color: var(--accent-primary);
+  cursor: pointer;
+  font-size: 0.8em;
+  vertical-align: super;
+  margin: 0 2px;
+  background: rgba(0, 255, 136, 0.1);
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.citation-marker:hover {
+  background: rgba(0, 255, 136, 0.2);
 }
 
 @media (max-width: 768px) {
