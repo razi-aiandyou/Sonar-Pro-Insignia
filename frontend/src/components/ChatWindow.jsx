@@ -136,21 +136,24 @@ function ChatWindow({ currentThread, addMessageToThread }) {
                 remarkPlugins={[remarkGfm]}
                 components={{
                   a: ({node, ...props}) => {
-                    // Handle citation links
                     if (props.href.startsWith('citation://')) {
                       const citationNumber = props.href.split('://')[1];
                       return (
-                        <a
-                          {...props}
-                          className="citation-link"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            document.querySelector(`#citation-${citationNumber}`)?.scrollIntoView({
-                              behavior: 'smooth',
-                              block: 'nearest'
-                            });
-                          }}
-                        />
+                        <sup className="citation-number"> 
+                          <a
+                            {...props}
+                            className="citation-link"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              document.querySelector(`#citation-${citationNumber}`)?.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'nearest'
+                              });
+                            }}
+                          >
+                            [{citationNumber}] 
+                          </a>
+                        </sup>
                       );
                     }
                     return <a {...props} target="_blank" rel="noopener noreferrer" />;

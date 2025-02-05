@@ -397,11 +397,21 @@ body {
 }
 
 .citation-number {
-  background: var(--text-secondary);
-  color: var(--accent-primary);
+  color: var(--text-primary);
   padding: 0.2rem 0.5rem;
   border-radius: 10px;
   font-weight: bold;
+}
+
+.citation-number a {
+  color: var(--text-primary);
+  text-decoration: none;
+  padding: 0 2px;
+}
+
+.citation-number a:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
 }
 
 .citation-link {
@@ -417,16 +427,19 @@ body {
 
 /* Scrollbar styling */
 .ticker-container::-webkit-scrollbar {
-  height: 4px;
+  height: 12px;
+  width: 12px;
 }
 
 .ticker-container::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
 }
 
 .ticker-container::-webkit-scrollbar-thumb {
   background: var(--accent-primary);
-  border-radius: 2px;
+  border-radius: 6px;
+  border: 3px solid var(--accent-primary);
 }
 
 .menu-icon {
